@@ -2,35 +2,43 @@ version: '3.8'
 
 services:
   db:
-    container_name: "tutorial_db"
-    build: 
+    container_name: "test_db"
+    build:
       context: .
       dockerfile: db.Dockerfile
-    network: 
-      - default 
+    networks:
+      - default
+    restart: always
     ports:
-     
-      - "3306:3306"
+      - "3307:3306"
+    # setting some env vars to create the DB
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "admin123"
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: "test"
       MYSQL_USER: "jasper"
-      MYSQL_PASSWORD: "admin123"  
+      MYSQL_PASSWORD: "admin123"
+      
+
     volumes:
       - mysql_data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
-api:
+
+  api:
     container_name:  "test_api"
     
     build:
       context: .
+      
       dockerfile: api.Dockerfile
+    environment:
+        DATABASE_HOST: db
+        DATABASE_PORT: 3306
     ports:
-      - "8080:8080"
+      - "8083:8083"
     
     depends_on:
       - db
-   
+    
     volumes:
       - .:/app/
 
